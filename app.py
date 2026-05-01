@@ -5,7 +5,9 @@ from flask_cors import CORS
 import psycopg
 from psycopg.rows import dict_row
 import os
+
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import csv
 from io import StringIO
@@ -91,7 +93,7 @@ def submit_rsvp():
         pax,
         dietary,
         message,
-        datetime.now()
+        datetime.now(ZoneInfo("Asia/Singapore"))
     ))
     conn.commit()
     cur.close()
