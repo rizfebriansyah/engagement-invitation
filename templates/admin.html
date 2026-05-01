@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSVP Admin</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <main class="admin-page">
+    <div class="admin-header">
+      <div>
+        <h1>RSVP Dashboard</h1>
+        <p class="small">Engagement guest tracking</p>
+      </div>
+      <a class="logout" href="/admin/logout">Logout</a>
+    </div>
+
+    <section class="stats">
+      <div class="stat-card">
+        <span>Total Responses</span>
+        <strong>{{ total_responses }}</strong>
+      </div>
+      <div class="stat-card">
+        <span>Coming</span>
+        <strong>{{ attending_count }}</strong>
+      </div>
+      <div class="stat-card">
+        <span>Not Coming</span>
+        <strong>{{ declined_count }}</strong>
+      </div>
+      <div class="stat-card highlight">
+        <span>Total Pax</span>
+        <strong>{{ total_pax }}</strong>
+      </div>
+    </section>
+
+    <section class="card table-card">
+      <h2>Guest List</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Status</th>
+              <th>Pax</th>
+              <th>Dietary</th>
+              <th>Message</th>
+              <th>Submitted</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>{{ row["name"] }}</td>
+                <td>{{ row["phone"] }}</td>
+                <td>
+                  {% if row["attending"] == "yes" %}
+                    <span class="badge yes">Coming</span>
+                  {% else %}
+                    <span class="badge no">Not coming</span>
+                  {% endif %}
+                </td>
+                <td>{{ row["pax"] }}</td>
+                <td>{{ row["dietary"] }}</td>
+                <td>{{ row["message"] }}</td>
+                <td>{{ row["submitted_at"] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

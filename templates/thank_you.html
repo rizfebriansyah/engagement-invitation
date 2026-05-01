@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <main class="center-page">
+    <section class="card thank-card">
+      <h1>Thank you, {{ name }} 🤍</h1>
+      {% if attending == "yes" %}
+        <p>We are so happy you’ll be joining us for our engagement.</p>
+      {% else %}
+        <p>Thank you for letting us know. You’ll be missed on the day.</p>
+      {% endif %}
+      <a class="map-btn" href="/">Back to Invitation</a>
+    </section>
+  </main>
+</body>
+</html>

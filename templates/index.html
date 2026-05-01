@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ruby & Rizqi Engagement Invitation</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="card glass">
+        <p class="eyebrow">With the blessings of our families</p>
+        <h1>Ruby<br><span>&</span><br>Rizqi</h1>
+        <p class="subtitle">Engagement Ceremony</p>
+        <p class="quote">Surrounded by the people closest to our hearts, we would be honoured to celebrate this meaningful day with you.</p>
+      </div>
+    </section>
+
+    <section class="details card">
+      <h2>Event Details</h2>
+      <div class="detail-grid">
+        <div>
+          <span>Date</span>
+          <strong>Sunday, 31 May 2026</strong>
+        </div>
+        <div>
+          <span>Time</span>
+          <strong>12:00 PM</strong>
+        </div>
+        <div>
+          <span>Venue</span>
+          <strong>Umatis Resto & Venue BSD</strong>
+        </div>
+        <div>
+          <span>Dress Code</span>
+          <strong>Soft neutral / formal casual</strong>
+        </div>
+      </div>
+      <a class="map-btn" href="https://maps.app.goo.gl/awZWAcZssKASZrak8" target="_blank">Open Location</a>
+    </section>
+
+    <section class="rsvp card">
+      <h2>RSVP</h2>
+      <p class="small">Kindly respond by 1 December 2026.</p>
+
+      <form action="/rsvp" method="POST">
+        <label>
+          Full Name
+          <input type="text" name="name" required placeholder="Your name" />
+        </label>
+
+        <label>
+          Phone Number
+          <input type="text" name="phone" placeholder="Optional" />
+        </label>
+
+        <label>
+          Will you be attending?
+          <select name="attending" required>
+            <option value="">Select one</option>
+            <option value="yes">YES. Joyfully attending</option>
+            <option value="no">NO. Sorry, unable to attend</option>
+          </select>
+        </label>
+
+        <label>
+          Number of Pax
+          <input type="number" name="pax" min="1" max="10" value="1" />
+        </label>
+
+        <label>
+          Dietary Restrictions
+          <input type="text" name="dietary" placeholder="Optional" />
+        </label>
+
+        <label>
+          Message
+          <textarea name="message" rows="3" placeholder="Optional wishes or note"></textarea>
+        </label>
+
+        <button type="submit">Submit RSVP</button>
+      </form>
+    </section>
+
+    <footer>
+      <p>Thank you for being part of our story.</p>
+      <p class="names">Ruby & Rizqi</p>
+    </footer>
+  </main>
+</body>
+</html>
