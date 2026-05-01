@@ -14,6 +14,23 @@ from io import StringIO
 from flask import Response
 
 app = Flask(__name__)
+
+@app.route("/admin/reset-db")
+def reset_db():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin"))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("TRUNCATE TABLE rsvps RESTART IDENTITY;")
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return redirect(url_for("admin"))
+
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
 CORS(app)
 
@@ -157,6 +174,22 @@ def api_summary():
         "declined_responses": sum(1 for row in rows if row["attending"] == "no"),
         "total_pax_attending": sum(row["pax"] for row in rows if row["attending"] == "yes")
     })
+
+@app.route("/admin/reset-db")
+def reset_db():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin"))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("TRUNCATE TABLE rsvps RESTART IDENTITY;")
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return redirect(url_for("admin"))
 
 @app.route("/admin/export")
 def export_csv():

@@ -74,7 +74,7 @@
                 <td>{{ row["pax"] }}</td>
                 <td>{{ row["dietary"] }}</td>
                 <td>{{ row["message"] }}</td>
-                <td>{{ row["submitted_at"] }}</td>
+                <td>{{ row["submitted_at"] | sg_time }}</td>
               </tr>
             {% endfor %}
           </tbody>
