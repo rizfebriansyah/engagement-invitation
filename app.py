@@ -7,6 +7,10 @@ from psycopg.rows import dict_row
 import os
 from datetime import datetime
 
+import csv
+from io import StringIO
+from flask import Response
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
 CORS(app)
@@ -151,6 +155,66 @@ def api_summary():
         "declined_responses": sum(1 for row in rows if row["attending"] == "no"),
         "total_pax_attending": sum(row["pax"] for row in rows if row["attending"] == "yes")
     })
+
+@app.route("/admin/export")
+def export_csv():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin"))
+
+    conn = get_db_connection()
+    cur = conn.cursor(row_factory=dict_row)
+
+    cur.execute("""
+        SELECT
+            name,
+            phone,
+            attending,
+            pax,
+            dietary,
+            message,
+            submitted_at
+        FROM rsvps
+        ORDER BY submitted_at DESC
+    """)
+
+    rows = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    output = StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Name",
+        "Phone",
+        "Attending",
+        "Pax",
+        "Dietary",
+        "Message",
+        "Submitted At"
+    ])
+
+    for row in rows:
+        writer.writerow([
+            row["name"],
+            row["phone"],
+            row["attending"],
+            row["pax"],
+            row["dietary"],
+            row["message"],
+            row["submitted_at"]
+        ])
+
+    output.seek(0)
+
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=guest_list.csv"
+        }
+    )
 
 
 if __name__ == "__main__":
