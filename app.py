@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_cors import CORS
-import psycopg2
-import psycopg2.extras
+# import psycopg2
+# import psycopg2.extras
+import psycopg
+from psycopg.rows import dict_row
 import os
 from datetime import datetime
 
@@ -16,7 +18,8 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "engaged2026")
 def get_db_connection():
     if not DATABASE_URL:
         raise RuntimeError("DATABASE_URL is not set")
-    return psycopg2.connect(DATABASE_URL, sslmode="require")
+    # return psycopg2.connect(DATABASE_URL, sslmode="require")
+    return psycopg.connect(DATABASE_URL)
 
 
 def init_db():
@@ -106,7 +109,7 @@ def admin():
         return render_template("login.html", error=None)
 
     conn = get_db_connection()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = conn.cursor(row_factory=dict_row)
     cur.execute("SELECT * FROM rsvps ORDER BY submitted_at DESC")
     rows = cur.fetchall()
     cur.close()
@@ -136,7 +139,7 @@ def logout():
 @app.route("/api/summary")
 def api_summary():
     conn = get_db_connection()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = conn.cursor(row_factory=dict_row)
     cur.execute("SELECT attending, pax FROM rsvps")
     rows = cur.fetchall()
     cur.close()
