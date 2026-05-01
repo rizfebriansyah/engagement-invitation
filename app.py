@@ -15,21 +15,16 @@ from flask import Response
 
 app = Flask(__name__)
 
-@app.route("/admin/reset-db")
-def reset_db():
-    if not session.get("admin_logged_in"):
-        return redirect(url_for("admin"))
+@app.template_filter("sg_time")
+def sg_time(value):
+    if not value:
+        return ""
 
-    conn = get_db_connection()
-    cur = conn.cursor()
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=ZoneInfo("UTC"))
 
-    cur.execute("TRUNCATE TABLE rsvps RESTART IDENTITY;")
-
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return redirect(url_for("admin"))
+    sg = value.astimezone(ZoneInfo("Asia/Singapore"))
+    return sg.strftime("%Y-%m-%d %I:%M %p")
 
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
 CORS(app)
