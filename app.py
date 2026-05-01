@@ -1,39 +1,47 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_cors import CORS
-import sqlite3
-from pathlib import Path
+import psycopg2
+import psycopg2.extras
+import os
 from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = "change-this-secret-key"
+app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
 CORS(app)
 
-DB_PATH = Path("rsvp.db")
-ADMIN_PASSWORD = "engaged2026"
+DATABASE_URL = os.environ.get("DATABASE_URL")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "engaged2026")
 
 
 def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL is not set")
+    return psycopg2.connect(DATABASE_URL, sslmode="require")
 
 
 def init_db():
     conn = get_db_connection()
-    conn.execute("""
+    cur = conn.cursor()
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS rsvps (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT NOT NULL,
             phone TEXT,
             attending TEXT NOT NULL,
             pax INTEGER NOT NULL,
             dietary TEXT,
             message TEXT,
-            submitted_at TEXT NOT NULL
+            submitted_at TIMESTAMP NOT NULL
         )
     """)
     conn.commit()
+    cur.close()
     conn.close()
+
+
+@app.before_request
+def setup_database():
+    init_db()
 
 
 @app.route("/")
@@ -64,14 +72,22 @@ def submit_rsvp():
         pax = max(1, min(pax, 10))
 
     conn = get_db_connection()
-    conn.execute(
-        """
-        INSERT INTO rsvps (name, phone, attending, pax, dietary, message, submitted_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """,
-        (name, phone, attending, pax, dietary, message, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    )
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO rsvps 
+        (name, phone, attending, pax, dietary, message, submitted_at)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """, (
+        name,
+        phone,
+        attending,
+        pax,
+        dietary,
+        message,
+        datetime.now()
+    ))
     conn.commit()
+    cur.close()
     conn.close()
 
     return render_template("thank_you.html", name=name, attending=attending)
@@ -90,14 +106,16 @@ def admin():
         return render_template("login.html", error=None)
 
     conn = get_db_connection()
-    rows = conn.execute("SELECT * FROM rsvps ORDER BY submitted_at DESC").fetchall()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM rsvps ORDER BY submitted_at DESC")
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
 
     total_responses = len(rows)
     attending_count = sum(1 for row in rows if row["attending"] == "yes")
     declined_count = sum(1 for row in rows if row["attending"] == "no")
     total_pax = sum(row["pax"] for row in rows if row["attending"] == "yes")
-
-    conn.close()
 
     return render_template(
         "admin.html",
@@ -118,7 +136,10 @@ def logout():
 @app.route("/api/summary")
 def api_summary():
     conn = get_db_connection()
-    rows = conn.execute("SELECT attending, pax FROM rsvps").fetchall()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT attending, pax FROM rsvps")
+    rows = cur.fetchall()
+    cur.close()
     conn.close()
 
     return jsonify({
@@ -130,5 +151,4 @@ def api_summary():
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)
