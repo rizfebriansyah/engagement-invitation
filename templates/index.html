@@ -10,7 +10,8 @@
   <main class="page">
     <section class="hero">
       <div class="card glass">
-        <p class="eyebrow">With the blessings of our families</p>
+        <!-- <p class="eyebrow">With the blessings of our families</p> -->
+        <p class="eyebrow">Dear {{ family_name }}</p>
         <h1>Ruby<br><span>&</span><br>Rizqi</h1>
         <p class="subtitle">Engagement Ceremony</p>
         <p class="quote">Surrounded by the people closest to our hearts, we would be honoured to celebrate this meaningful day with you.</p>
@@ -45,6 +46,9 @@
       <p class="small">Kindly respond by 1 December 2026.</p>
 
       <form action="/rsvp" method="POST">
+          <input type="hidden" name="family_slug" value="{{ family_slug }}" />
+          <input type="hidden" name="family_name" value="{{ family_name }}" />
+          <input type="hidden" name="max_pax" value="{{ max_pax }}" />
         <label>
           Full Name
           <input type="text" name="name" required placeholder="Your name" />
@@ -66,7 +70,7 @@
 
         <label>
           Number of Pax
-          <input type="number" name="pax" min="1" max="10" value="1" />
+          <input type="number" name="pax" min="1" max="{{ max_pax }}" value="1" />
         </label>
 
         <label>

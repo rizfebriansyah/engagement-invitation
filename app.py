@@ -32,6 +32,20 @@ CORS(app)
 DATABASE_URL = os.environ.get("DATABASE_URL")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "engaged2026")
 
+FAMILIES = {
+    "rizqi-family": {
+        "family_name": "Rizqi Family",
+        "max_pax": 3
+    },
+    "ruby-family": {
+        "family_name": "Ruby Family",
+        "max_pax": 5
+    },
+    "sahira-family": {
+        "family_name": "Sahira Family",
+        "max_pax": 3
+    }
+}
 
 def get_db_connection():
     if not DATABASE_URL:
@@ -46,6 +60,8 @@ def init_db():
     cur.execute("""
         CREATE TABLE IF NOT EXISTS rsvps (
             id SERIAL PRIMARY KEY,
+            family_slug TEXT,
+            family_name TEXT,
             name TEXT NOT NULL,
             phone TEXT,
             attending TEXT NOT NULL,
@@ -55,6 +71,15 @@ def init_db():
             submitted_at TIMESTAMP NOT NULL
         )
     """)
+    try:
+        cur.execute("ALTER TABLE rsvps ADD COLUMN family_slug TEXT")
+    except Exception:
+        conn.rollback()
+
+    try:
+        cur.execute("ALTER TABLE rsvps ADD COLUMN family_name TEXT")
+    except Exception:
+        conn.rollback()
     conn.commit()
     cur.close()
     conn.close()
@@ -67,8 +92,26 @@ def setup_database():
 
 @app.route("/")
 def invitation():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        family_slug="general",
+        family_name="Our Beloved Guest",
+        max_pax=10
+    )
 
+@app.route("/invite/<slug>")
+def personalized_invite(slug):
+    family = FAMILIES.get(slug)
+
+    if not family:
+        return redirect(url_for("invitation"))
+
+    return render_template(
+        "index.html",
+        family_slug=slug,
+        family_name=family["family_name"],
+        max_pax=family["max_pax"]
+    )
 
 @app.route("/rsvp", methods=["POST"])
 def submit_rsvp():
@@ -78,6 +121,9 @@ def submit_rsvp():
     pax = request.form.get("pax", "0").strip()
     dietary = request.form.get("dietary", "").strip()
     message = request.form.get("message", "").strip()
+    family_slug = request.form.get("family_slug", "").strip()
+    family_name = request.form.get("family_name", "").strip()
+    max_pax = request.form.get("max_pax", "10").strip()
 
     if not name or attending not in ["yes", "no"]:
         return redirect(url_for("invitation"))
@@ -87,18 +133,25 @@ def submit_rsvp():
     except ValueError:
         pax = 0
 
+    try:
+        max_pax = int(max_pax)
+    except ValueError:
+        max_pax = 10
+
     if attending == "no":
         pax = 0
     else:
-        pax = max(1, min(pax, 10))
+        pax = max(1, min(pax, max_pax))
 
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
         INSERT INTO rsvps 
-        (name, phone, attending, pax, dietary, message, submitted_at)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        (family_slug, family_name, name, phone, attending, pax, dietary, message, submitted_at)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """, (
+        family_slug,
+        family_name,
         name,
         phone,
         attending,
@@ -112,7 +165,6 @@ def submit_rsvp():
     conn.close()
 
     return render_template("thank_you.html", name=name, attending=attending)
-
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
