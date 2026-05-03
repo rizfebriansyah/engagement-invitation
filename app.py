@@ -53,6 +53,10 @@ FAMILIES = {
         "family_name": "Pakde Mat & Family",
         "max_pax": 4
     },
+    "apta-family": {
+        "family_name": "Mas Apta & Family",
+        "max_pax": 3
+    },    
     "mba-irma-family": {
         "family_name": "Mba Irma & Family",
         "max_pax": 3
