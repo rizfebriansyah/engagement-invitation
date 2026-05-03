@@ -115,8 +115,10 @@ def personalized_invite(slug):
 
 @app.route("/rsvp", methods=["POST"])
 def submit_rsvp():
-    name = request.form.get("name", "").strip()
-    phone = request.form.get("phone", "").strip()
+    # name = request.form.get("name", "").strip()
+    # phone = request.form.get("phone", "").strip()
+    name = request.form.get("family_name", "Guest").strip()
+    phone = ""
     attending = request.form.get("attending", "").strip()
     pax = request.form.get("pax", "0").strip()
     dietary = request.form.get("dietary", "").strip()
@@ -125,7 +127,9 @@ def submit_rsvp():
     family_name = request.form.get("family_name", "").strip()
     max_pax = request.form.get("max_pax", "10").strip()
 
-    if not name or attending not in ["yes", "no"]:
+    # if not name or attending not in ["yes", "no"]:
+    #     return redirect(url_for("invitation"))
+    if attending not in ["yes", "no"]:
         return redirect(url_for("invitation"))
 
     try:
