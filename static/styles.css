@@ -76,7 +76,7 @@ h1 {
 
 h1 span {
   /* color: var(--gold); */
-  color: #d4af37;
+  color: #875a28;
   font-size: 42px;
 }
 
@@ -134,12 +134,14 @@ button,
   border: none;
   border-radius: 999px;
   padding: 15px 18px;
-  background: var(--ink);
+  background: linear-gradient(135deg, #7b1e2b, #a52a3a);
   color: white;
   text-decoration: none;
   text-align: center;
   font-weight: 700;
   cursor: pointer;
+  border: 1px solid rgba(212,175,55,0.35);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
 }
 
 form {
