@@ -33,18 +33,38 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "engaged2026")
 
 FAMILIES = {
-    "rizqi-family": {
-        "family_name": "Rizqi Family",
+    "pakde-bob-family": {
+        "family_name": "Pakde Bob & Family",
         "max_pax": 3
     },
-    "ruby-family": {
-        "family_name": "Ruby Family",
-        "max_pax": 5
-    },
-    "sahira-family": {
-        "family_name": "Sahira Family",
+    "tante-wulan-family": {
+        "family_name": "Tante Wulan & Family",
         "max_pax": 3
-    }
+    },    
+    "mas-ais-family": {
+        "family_name": "Mas Ais & Family",
+        "max_pax": 3
+    },
+    "bude-nunuk-family": {
+        "family_name": "Bude Nunuk & Family",
+        "max_pax": 3
+    },
+    "pakde-mat-family": {
+        "family_name": "Pakde Mat & Family",
+        "max_pax": 4
+    },
+    "mba-irma-family": {
+        "family_name": "Mba Irma & Family",
+        "max_pax": 3
+    },
+    "tante-lely-family": {
+        "family_name": "Tante Lely & Family",
+        "max_pax": 3
+    },
+    "kak-aga-family": {
+        "family_name": "Kak Aga & Family",
+        "max_pax": 3
+    }    
 }
 
 def get_db_connection():
