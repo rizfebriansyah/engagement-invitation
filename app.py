@@ -65,10 +65,14 @@ FAMILIES = {
         "family_name": "Tante Lely & Family",
         "max_pax": 3
     },
-    "kak-aga-family": {
-        "family_name": "Kak Aga & Family",
-        "max_pax": 3
-    }    
+    "tante-ghalih-family": {
+        "family_name": "Tante Ghalih & Family",
+        "max_pax": 5
+    },
+    "om-syamsu-family": {
+        "family_name": "Om Syamsu Indra & Family",
+        "max_pax": 5
+    }      
 }
 
 def get_db_connection():
