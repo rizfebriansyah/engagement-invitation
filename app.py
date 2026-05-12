@@ -72,7 +72,11 @@ FAMILIES = {
     "om-syamsu-family": {
         "family_name": "Om Syamsu Indra & Family",
         "max_pax": 5
-    }      
+    },
+    "om-yusman-family": {
+        "family_name": "Om Yusman Haris & Family",
+        "max_pax": 5
+    }       
 }
 
 def get_db_connection():
